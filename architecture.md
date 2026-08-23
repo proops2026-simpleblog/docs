@@ -2,10 +2,14 @@
 
 ```mermaid
 graph TD
-  Client([Client / Browser / Postman])
+  Client([Client / Browser])
+
+  subgraph Frontend Layer
+    FE["frontend (:5173)<br/>React SPA, calls gateway from the browser"]
+  end
 
   subgraph Gateway Layer
-    GW["api-gateway (:3000)<br/>JWT Auth & Routing"]
+    GW["gateway (:3000)<br/>JWT Auth & Routing"]
   end
 
   subgraph Microservices Layer
@@ -17,9 +21,12 @@ graph TD
     PG[("PostgreSQL (:5432)<br/>user_db & content_db")]
   end
 
-  Client -->|"HTTP REST :3000"| GW
+  Client -->|"loads static app :5173"| FE
+  Client -->|"HTTP REST :3000 (Authorization: Bearer)"| GW
   GW -->|":3002 /auth/register, /auth/login, /users/:id/role"| US
   GW -->|":3001 /posts/*, /categories/*, /comments/*"| CS
   US -->|"SQL: user_db"| PG
   CS -->|"SQL: content_db"| PG
 ```
+
+Note: `frontend` only serves the static React bundle to the browser — the actual API traffic (`Client -->|HTTP REST :3000| GW`) is issued by JavaScript running *inside the browser*, not by the `frontend` container itself. This is why both arrows originate from `Client`, not from `FE`.

@@ -1,11 +1,11 @@
 # Sprint 1 Backlog — Blog / CMS Platform
 
-**Sprint Goal:** Implement and containerize `user-service` (including role management & admin bootstrap) and set up the foundation for `api-gateway` routing and PostgreSQL connectivity.
+**Sprint Goal:** Implement and containerize `user-service` (including role management & admin bootstrap) and set up the foundation for `gateway` routing and PostgreSQL connectivity.
 
 **Team & Service Ownership (PIC):**
 - **Dat Pham** — PIC for `user-service` (IRD-001)
 - **Trung** — PIC for `content-service` (IRD-002)
-- **Shared (Dat Pham & Trung)** — `api-gateway` & infrastructure (IRD-003), `DOP-001`
+- **Shared (Dat Pham & Trung)** — `gateway` & infrastructure (IRD-003), `DOP-001`
 
 ---
 
@@ -34,19 +34,19 @@
 
 ---
 
-## Epic 2: Gateway & Infrastructure Foundation (`api-gateway` & `infra`) — PIC: Shared
+## Epic 2: Gateway & Infrastructure Foundation (`gateway` & `infra`) — PIC: Shared
 
 ### User Story 4: Containerization & Routing Foundation
-> As a DevOps engineer, I want to containerize `user-service` and set up `api-gateway` routing so that auth requests are proxied securely.
+> As a DevOps engineer, I want to containerize `user-service` and set up `gateway` routing so that auth requests are proxied securely.
 
 - [ ] **Task 4.1 (Dat Pham):** Write production-grade multi-stage Dockerfile for `user-service` and Docker Compose setup with PostgreSQL and health checks. *(1 day)*
-- [ ] **Task 4.2 (Trung):** Set up `api-gateway` skeleton with routing to `user-service` (including `/users/:id/role`) and JWT validation middleware forwarding `X-User-Id` & `X-User-Role` headers. *(1 day)*
+- [ ] **Task 4.2 (Trung):** Set up `gateway` skeleton with routing to `user-service` (including `/users/:id/role`) and JWT validation middleware forwarding `X-User-Id` & `X-User-Role` headers. *(1 day)*
 
 ---
 
 ## Definition of Done (DoD)
-- All `user-service` endpoints (`POST /auth/register`, `POST /auth/login`, `PATCH /users/:id/role`, `GET /health`) work correctly through `api-gateway`.
+- All `user-service` endpoints (`POST /auth/register`, `POST /auth/login`, `PATCH /users/:id/role`, `GET /health`) work correctly through `gateway`.
 - Public registration strictly enforces role `READER`; only the automated startup seed may create an `ADMIN` directly.
 - JWT contains correct payload claims (HS256) and signature verification succeeds.
 - All unit and integration tests pass, including the bootstrap idempotency test.
-- `docker-compose up` starts PostgreSQL, `user-service`, and `api-gateway` with passing health checks.
+- `docker-compose up` starts PostgreSQL, `user-service`, and `gateway` with passing health checks.
