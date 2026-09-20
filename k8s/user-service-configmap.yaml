@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-config
+data:
+  PORT: "3002"
+  INITIAL_ADMIN_EMAIL: "admin@blogcms.local"
