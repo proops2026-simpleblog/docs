@@ -1,0 +1,43 @@
+# EKS variant (DOP-004) — replaces the old proops2026/k8s/blogcms/ set.
+# Apply:  kubectl apply -k k8s/overlays/eks
+# Only what differs from base lives here: ECR images, pull policy, replica count.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+
+# ECR repo in eu-west-2 (DOP-002). Tag :v1 until CI pushes commit-SHA tags (IRD-006, Day 24).
+images:
+  - name: user-service
+    newName: 868737222758.dkr.ecr.eu-west-2.amazonaws.com/user-service
+    newTag: v1
+  - name: content-service
+    newName: 868737222758.dkr.ecr.eu-west-2.amazonaws.com/content-service
+    newTag: v1
+  - name: gateway
+    newName: 868737222758.dkr.ecr.eu-west-2.amazonaws.com/gateway
+    newTag: v1
+  - name: frontend
+    newName: 868737222758.dkr.ecr.eu-west-2.amazonaws.com/frontend
+    newTag: v1
+
+# 1 x t3.small node, max-pods=11 — the base replica count (2 each) does not fit (DOP-004).
+replicas:
+  - name: user-service
+    count: 1
+  - name: content-service
+    count: 1
+  - name: gateway
+    count: 1
+  - name: frontend
+    count: 1
+
+# Base uses imagePullPolicy: Never (locally loaded images); EKS must pull from ECR.
+patches:
+  - target:
+      kind: Deployment
+      name: (user-service|content-service|gateway|frontend)
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent

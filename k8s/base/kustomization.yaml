@@ -1,0 +1,26 @@
+# Reference manifest set (DOP-003 AC-1) — runs as-is on minikube / Docker Desktop.
+# Apply:  kubectl apply -k k8s/base      (Secrets first: k8s/create-secrets.sh)
+# Every file also carries `namespace: blogcms` so a single-file apply never lands in default.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: blogcms
+resources:
+  - namespace.yaml
+  - postgres-configmap.yaml
+  - postgres-initdb-configmap.yaml
+  - postgres-pvc.yaml
+  - postgres-deployment.yaml
+  - postgres-service.yaml
+  - user-service-configmap.yaml
+  - user-service-deployment.yaml
+  - user-service-service.yaml
+  - content-service-configmap.yaml
+  - content-service-deployment.yaml
+  - content-service-service.yaml
+  - gateway-configmap.yaml
+  - gateway-deployment.yaml
+  - gateway-service.yaml
+  - frontend-configmap.yaml
+  - frontend-deployment.yaml
+  - frontend-service.yaml
+  - project-ingress.yaml

@@ -1,42 +1,53 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gateway
+  name: user-service
+  namespace: blogcms
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: gateway
+      app: user-service
   template:
     metadata:
       labels:
-        app: gateway
+        app: user-service
     spec:
       containers:
-      - name: gateway
-        image: gateway:local
+      - name: user-service
+        image: user-service:local
         imagePullPolicy: Never
         ports:
-        - containerPort: 3000
+        - containerPort: 3002
         envFrom:
         - configMapRef:
-            name: gateway-config
+            name: user-service-config
         env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: user-service-credentials
+              key: DATABASE_URL
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:
-              name: gateway-credentials
+              name: user-service-credentials
               key: JWT_SECRET
+        - name: INITIAL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: user-service-credentials
+              key: INITIAL_ADMIN_PASSWORD
         readinessProbe:
           httpGet:
             path: /health
-            port: 3000
+            port: 3002
           initialDelaySeconds: 5
           periodSeconds: 5
         livenessProbe:
           httpGet:
             path: /health
-            port: 3000
+            port: 3002
           initialDelaySeconds: 10
           periodSeconds: 10
         resources:

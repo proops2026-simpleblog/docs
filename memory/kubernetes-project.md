@@ -9,11 +9,11 @@
 
 | Service | K8s Service name | Namespace | Port | Type | Image |
 |---|---|---|---|---|---|
-| postgres | `postgres` | default | 5432 | ClusterIP | `postgres:16-alpine` (public) |
-| user-service | `user-service` | default | 3002 | ClusterIP | `user-service:local` (built) |
-| content-service | `content-service` | default | 3001 | ClusterIP | `content-service:local` (built) |
-| gateway | `gateway` | default | 3000 | ClusterIP + Ingress | `gateway:local` (built) |
-| frontend | `frontend` | default | 5173 | ClusterIP + Ingress | `frontend:local` (built, Vite dev server) |
+| postgres | `postgres` | blogcms | 5432 | ClusterIP | `postgres:16-alpine` (public) |
+| user-service | `user-service` | blogcms | 3002 | ClusterIP | `user-service:local` (built) |
+| content-service | `content-service` | blogcms | 3001 | ClusterIP | `content-service:local` (built) |
+| gateway | `gateway` | blogcms | 3000 | ClusterIP + Ingress | `gateway:local` (built) |
+| frontend | `frontend` | blogcms | 5173 | ClusterIP + Ingress | `frontend:local` (built, Vite dev server) |
 
 ## 2. ConfigMap vs Secret rule
 
@@ -21,9 +21,11 @@ If leaking the value to a CI log or PR diff would require an incident review, it
 
 ## 3. In-cluster DNS pattern
 
-`<service-name>` alone resolves within the `default` namespace (e.g. `postgres`, `user-service:3002`) — no `.svc.cluster.local` suffix needed. Every Service name intentionally matches the original Docker Compose service name, so no application code needed to change.
+`<service-name>` alone resolves within the `blogcms` namespace (moved out of `default` 2026-10-17) (e.g. `postgres`, `user-service:3002`) — no `.svc.cluster.local` suffix needed. Every Service name intentionally matches the original Docker Compose service name, so no application code needed to change.
 
 ## 4. Apply order (dependency chain)
+
+Since 2026-10-17 one command applies everything into `blogcms`: `k8s/create-secrets.sh && kubectl apply -k k8s/base` (EKS: `kubectl apply -k k8s/overlays/eks`). Backends that start before postgres is Ready crash-loop briefly and recover; the chain below is still the runtime dependency order.
 
 ```
 postgres  →  user-service, content-service  →  gateway  →  frontend  →  Ingress

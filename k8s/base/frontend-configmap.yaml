@@ -2,5 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: frontend-config
+  namespace: blogcms
 data:
   VITE_API_BASE_URL: "http://api.blogcms.local"
