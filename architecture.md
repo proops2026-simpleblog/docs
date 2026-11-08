@@ -49,6 +49,6 @@ graph LR
 | No direct push / force push / deletion of `main` | Repository Ruleset `Protect main` (active, bypass list empty) | on — direct push rejected with `GH013` |
 | 1 approval, stale approval dismissed on new push, threads resolved | same ruleset, `pull_request` rule | on |
 | Squash only, PR title becomes the commit | repo settings → Pull Requests | on |
-| CI green before merge | ruleset `required_status_checks` | **off until Day 23** — needs an existing workflow check name |
+| CI green before merge | ruleset `required_status_checks` | on for content-service (lint, test, build-image, deploy); other repos pending their CI workflow |
 
 Why repository-level rulesets: legacy Branch Protection and Org Rulesets need GitHub Team for private repos; repository rulesets work on the free plan, so the same setup is repeated in each repo.
